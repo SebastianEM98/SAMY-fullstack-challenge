@@ -36,4 +36,16 @@ export const postsService = {
 
         return post;
     },
+
+    async update(id: PostId, dto: UpdatePostDto) {
+        const post = await postsRepository.findById(id);
+
+        if (!post) {
+            const err = new Error('Post not found') as any;
+            err.statusCode = 404;
+            throw err;
+        }
+
+        return postsRepository.update(id, dto);
+    },
 };

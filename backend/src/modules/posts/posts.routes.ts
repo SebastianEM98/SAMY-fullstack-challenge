@@ -10,5 +10,6 @@ router.use(authenticate);
 router.post('/', postsController.create);
 router.get('/', postsController.getAll);
 router.get('/:id', postsController.getById);
+router.put('/:id', postsController.update);
 
 export { router as postsRouter };

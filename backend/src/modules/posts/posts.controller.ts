@@ -74,4 +74,34 @@ export const postsController = {
             next(error);
         }
     },
+
+    // PUT /posts/:id
+    async update(req: Request, res: Response, next: NextFunction) {
+        try {
+            const idParsed = idSchema.safeParse(req.params.id);
+
+            if (!idParsed.success) {
+                res.status(400).json({ error: 'Invalid post ID' });
+                return;
+            }
+
+            const bodyParsed = updatePostSchema.safeParse(req.body);
+
+            if (!bodyParsed.success) {
+                res.status(400).json({
+                    error: 'Validation failed',
+                    details: bodyParsed.error.issues.map((i) => ({
+                        field: i.path.join('.'),
+                        message: i.message,
+                    })),
+                });
+                return;
+            }
+
+            const post = await postsService.update(idParsed.data, bodyParsed.data);
+            res.json(post);
+        } catch (error) {
+            next(error);
+        }
+    },
 };
