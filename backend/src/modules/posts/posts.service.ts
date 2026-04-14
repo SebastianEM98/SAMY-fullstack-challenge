@@ -24,4 +24,16 @@ export const postsService = {
     async getAll(page: number = 1, limit: number = 10) {
         return postsRepository.findAll(page, limit);
     },
+
+    async getById(id: PostId) {
+        const post = await postsRepository.findById(id);
+
+        if (!post) {
+            const err = new Error('Post not found') as any;
+            err.statusCode = 404;
+            throw err;
+        }
+
+        return post;
+    },
 };

@@ -58,4 +58,20 @@ export const postsController = {
         }
     },
 
+    // GET /posts/:id
+    async getById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const parsed = idSchema.safeParse(req.params.id);
+
+            if (!parsed.success) {
+                res.status(400).json({ error: 'Invalid post ID' });
+                return;
+            }
+
+            const post = await postsService.getById(parsed.data);
+            res.json(post);
+        } catch (error) {
+            next(error);
+        }
+    },
 };
