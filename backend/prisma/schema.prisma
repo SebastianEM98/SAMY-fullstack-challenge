@@ -11,4 +11,32 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  // url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id
+  email     String   @unique
+  firstName String
+  lastName  String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts     Post[]
+
+  @@map("users")
+}
+
+model Post {
+  id           String   @id @default(cuid())
+  title        String
+  content         String
+  authorUserId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  author       User     @relation(fields: [authorUserId], references: [id])
+
+  @@map("posts")
 }
