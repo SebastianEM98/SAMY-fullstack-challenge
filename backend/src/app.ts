@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
 import { corsOptions } from './config/cors';
-import { env } from './config/env';
+import { authRouter } from './modules/auth/auth.routes';
 
 export const createApp = () => {
     const app = express();
@@ -16,7 +16,8 @@ export const createApp = () => {
 
     
     // Routes
-    
+    app.use('/api/auth', authRouter);
+
 
     // Error handling
     app.use(notFound);
