@@ -35,4 +35,15 @@ export const usersController = {
             next(error);
         }
     },
+
+    // GET /users/saved
+    async getSavedUsers(_req: Request, res: Response, next: NextFunction) {
+        try {
+            const users = await usersService.getSavedUsers();
+            res.json(users);
+        } catch (error) {
+            next(error);
+        }
+    },
+
 };

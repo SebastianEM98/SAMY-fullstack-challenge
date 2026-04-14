@@ -48,4 +48,8 @@ export const usersService = {
             throw err;
         }
     },
+
+    async getSavedUsers() {
+        return usersRepository.findAll();
+    },
 };
