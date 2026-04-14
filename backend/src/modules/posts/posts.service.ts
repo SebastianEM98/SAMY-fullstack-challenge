@@ -48,4 +48,16 @@ export const postsService = {
 
         return postsRepository.update(id, dto);
     },
+
+    async delete(id: PostId) {
+        const post = await postsRepository.findById(id);
+
+        if (!post) {
+            const err = new Error('Post not found') as any;
+            err.statusCode = 404;
+            throw err;
+        }
+
+        await postsRepository.delete(id);
+    },
 };

@@ -104,4 +104,21 @@ export const postsController = {
             next(error);
         }
     },
+
+    // DELETE /posts/:id
+    async delete(req: Request, res: Response, next: NextFunction) {
+        try {
+            const parsed = idSchema.safeParse(req.params.id);
+
+            if (!parsed.success) {
+                res.status(400).json({ error: 'Invalid post ID' });
+                return;
+            }
+
+            await postsService.delete(parsed.data);
+            res.status(204).send();
+        } catch (error) {
+            next(error);
+        }
+    },
 };
