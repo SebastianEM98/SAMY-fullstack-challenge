@@ -5,6 +5,7 @@ import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
 import { corsOptions } from './config/cors';
 import { authRouter } from './modules/auth/auth.routes';
+import { authenticate } from './middleware/authenticate';
 
 export const createApp = () => {
     const app = express();
