@@ -75,4 +75,17 @@ export const usersService = {
 
         return user;
     },
+
+    // Deletes a local user by ID
+    async deleteSavedUser(id: number) {
+        const user = await usersRepository.findById(id);
+    
+        if (!user) {
+          const err = new Error('User not found locally') as any;
+          err.statusCode = 404;
+          throw err;
+        }
+    
+        await usersRepository.deleteById(id);
+      },
 };

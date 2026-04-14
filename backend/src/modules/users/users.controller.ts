@@ -79,4 +79,21 @@ export const usersController = {
             next(error);
         }
     },
+
+    // DELETE /users/saved/:id
+    async deleteSavedUser(req: Request, res: Response, next: NextFunction) {
+        try {
+            const parsed = idSchema.safeParse(req.params.id);
+
+            if (!parsed.success) {
+                res.status(400).json({ error: 'Invalid user ID' });
+                return;
+            }
+
+            await usersService.deleteSavedUser(parsed.data);
+            res.status(204).send();
+        } catch (error) {
+            next(error);
+        }
+    },
 };
