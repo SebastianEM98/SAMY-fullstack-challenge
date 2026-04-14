@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import morgan from "morgan";
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
 import { corsOptions } from './config/cors';
@@ -17,6 +18,10 @@ export const createApp = () => {
     app.use(express.json());
 
 
+    // Logging
+    app.use(morgan('dev'))
+
+
     // Routes
     app.use('/auth', authRouter);
     app.use('/users', usersRouter);
@@ -26,7 +31,7 @@ export const createApp = () => {
     // Error handling
     app.use(notFound);
     app.use(errorHandler);
-    
+
 
     return app;
 };
