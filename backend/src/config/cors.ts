@@ -10,7 +10,7 @@ export const corsOptions: CorsOptions = {
     origin: (origin, callback) => {
 
         // Allows requests without Origin (Postman, curl, Lambda test) only in development
-        if (!origin && env.nodeEnv === 'development') {
+        if (!origin && env.nodeEnv === 'development' || env.nodeEnv === 'test') {
             return callback(null, true);
         }
 
