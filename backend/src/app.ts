@@ -6,6 +6,7 @@ import { notFound } from './middleware/notFound';
 import { corsOptions } from './config/cors';
 import { authRouter } from './modules/auth/auth.routes';
 import { usersRouter } from './modules/users/users.routes';
+import { postsRouter } from './modules/posts/posts.routes';
 
 export const createApp = () => {
     const app = express();
@@ -19,6 +20,7 @@ export const createApp = () => {
     // Routes
     app.use('/auth', authRouter);
     app.use('/users', usersRouter);
+    app.use('/posts', postsRouter);
 
 
     // Error handling
