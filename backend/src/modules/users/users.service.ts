@@ -19,4 +19,33 @@ export const usersService = {
             throw err;
         }
     },
+
+    // Fetches a user from ReqRes and saves them to the DB
+    async importUser(id: ReqResUserId) {
+        try {
+            const { data } = await reqresClient.get<{ data: ReqResUser }>(`/users/${id}`);
+
+            if (!data.data) {
+                const err = new Error('User not found in ReqRes') as any;
+                err.statusCode = 404;
+                throw err;
+            }
+
+            const saved = await usersRepository.save(data.data);
+            return saved;
+
+        } catch (error: any) {
+            if (error.statusCode) throw error;
+
+            if (error.response?.status === 404) {
+                const err = new Error('User not found in ReqRes') as any;
+                err.statusCode = 404;
+                throw err;
+            }
+
+            const err = new Error('Failed to import user') as any;
+            err.statusCode = 502;
+            throw err;
+        }
+    },
 };

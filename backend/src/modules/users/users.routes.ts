@@ -8,6 +8,6 @@ const router = Router();
 router.use(authenticate);
 
 router.get('/reqres', usersController.getReqResUsers);
-
+router.post('/import/:id', usersController.importUser);
 
 export { router as usersRouter };

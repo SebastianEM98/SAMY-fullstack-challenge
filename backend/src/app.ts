@@ -19,11 +19,12 @@ export const createApp = () => {
     // Routes
     app.use('/auth', authRouter);
     app.use('/users', usersRouter);
-    
+
 
     // Error handling
     app.use(notFound);
     app.use(errorHandler);
+    
 
     return app;
 };

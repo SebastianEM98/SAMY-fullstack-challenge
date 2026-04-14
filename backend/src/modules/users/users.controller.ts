@@ -18,4 +18,21 @@ export const usersController = {
             next(error);
         }
     },
+
+    // POST /users/import/:id
+    async importUser(req: Request, res: Response, next: NextFunction) {
+        try {
+            const parsed = idSchema.safeParse(req.params.id);
+
+            if (!parsed.success) {
+                res.status(400).json({ error: 'Invalid user ID' });
+                return;
+            }
+
+            const user = await usersService.importUser(parsed.data);
+            res.status(201).json(user);
+        } catch (error) {
+            next(error);
+        }
+    },
 };
