@@ -58,8 +58,21 @@ export const usersService = {
         return usersRepository.save(user);
     },
 
-    // Fetches all local users
+    // Get all local users
     async getSavedUsers() {
         return usersRepository.findAll();
+    },
+
+    // Get a local user by ID
+    async getSavedUserById(id: ReqResUserId) {
+        const user = await usersRepository.findById(id);
+
+        if (!user) {
+            const err = new Error('User not found locally') as any;
+            err.statusCode = 404;
+            throw err;
+        }
+
+        return user;
     },
 };
