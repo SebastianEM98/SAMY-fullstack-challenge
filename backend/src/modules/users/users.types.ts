@@ -13,3 +13,6 @@ export interface ReqResListResponse {
     total_pages: number;
     data: ReqResUser[];
 }
+
+export type ReqResUserId = ReqResUser['id'];
+export type ReqResPage = ReqResListResponse['page'];

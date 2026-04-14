@@ -1,5 +1,5 @@
 import { prisma } from '../../config/prisma';
-import { ReqResUser } from './users.types';
+import { ReqResUser, ReqResUserId } from './users.types';
 
 export const usersRepository = {
 
@@ -28,13 +28,13 @@ export const usersRepository = {
         });
     },
 
-    async findById(id: number) {
+    async findById(id: ReqResUserId) {
         return prisma.user.findUnique({
             where: { id },
         });
     },
 
-    async deleteById(id: number) {
+    async deleteById(id: ReqResUserId) {
         return prisma.user.delete({
             where: { id },
         });

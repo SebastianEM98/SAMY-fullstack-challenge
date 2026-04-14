@@ -5,7 +5,7 @@ import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
 import { corsOptions } from './config/cors';
 import { authRouter } from './modules/auth/auth.routes';
-import { authenticate } from './middleware/authenticate';
+import { usersRouter } from './modules/users/users.routes';
 
 export const createApp = () => {
     const app = express();
@@ -15,10 +15,11 @@ export const createApp = () => {
     app.use(cors(corsOptions));
     app.use(express.json());
 
-    
-    // Routes
-    app.use('/api/auth', authRouter);
 
+    // Routes
+    app.use('/auth', authRouter);
+    app.use('/users', usersRouter);
+    
 
     // Error handling
     app.use(notFound);
