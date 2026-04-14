@@ -8,5 +8,6 @@ const router = Router();
 router.use(authenticate);
 
 router.post('/', postsController.create);
+router.get('/', postsController.getAll);
 
 export { router as postsRouter };

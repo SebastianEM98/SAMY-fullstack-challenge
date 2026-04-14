@@ -20,4 +20,8 @@ export const postsService = {
 
         return postsRepository.create(dto);
     },
+
+    async getAll(page: number = 1, limit: number = 10) {
+        return postsRepository.findAll(page, limit);
+    },
 };

@@ -45,4 +45,17 @@ export const postsController = {
             next(error);
         }
     },
+
+    // GET /posts
+    async getAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = pageSchema.parse(req.query.page ?? 1);
+            const limit = limitSchema.parse(req.query.limit ?? 10);
+            const result = await postsService.getAll(page, limit);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
 };
