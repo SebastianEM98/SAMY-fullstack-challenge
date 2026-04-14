@@ -19,6 +19,23 @@ export const usersController = {
         }
     },
 
+    // GET /users/reqres/:id
+    async getReqResUserById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const parsed = idSchema.safeParse(req.params.id);
+
+            if (!parsed.success) {
+                res.status(400).json({ error: 'Invalid user ID' });
+                return;
+            }
+
+            const user = await usersService.getReqResUserById(parsed.data);
+            res.json(user);
+        } catch (error) {
+            next(error);
+        }
+    },
+
     // POST /users/import/:id
     async importUser(req: Request, res: Response, next: NextFunction) {
         try {

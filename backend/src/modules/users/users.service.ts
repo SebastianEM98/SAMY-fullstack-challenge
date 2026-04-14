@@ -20,8 +20,8 @@ export const usersService = {
         }
     },
 
-    // Fetches a user from ReqRes and saves them to the DB
-    async importUser(id: ReqResUserId) {
+    // Reusable function that fetches a user from ReqRes
+    async fetchUserFromReqRes(id: ReqResUserId): Promise<ReqResUser> {
         try {
             const { data } = await reqresClient.get<{ data: ReqResUser }>(`/users/${id}`);
 
@@ -31,9 +31,7 @@ export const usersService = {
                 throw err;
             }
 
-            const saved = await usersRepository.save(data.data);
-            return saved;
-
+            return data.data;
         } catch (error: any) {
             if (error.statusCode) throw error;
 
@@ -43,12 +41,24 @@ export const usersService = {
                 throw err;
             }
 
-            const err = new Error('Failed to import user') as any;
+            const err = new Error('Failed to fetch user from ReqRes') as any;
             err.statusCode = 502;
             throw err;
         }
     },
 
+    // Fetches a user from ReqRes by ID
+    async getReqResUserById(id: ReqResUserId) {
+        return this.fetchUserFromReqRes(id);
+    },
+
+    // Fetches a user from ReqRes and saves them to the DB
+    async importUser(id: ReqResUserId) {
+        const user = await this.fetchUserFromReqRes(id);
+        return usersRepository.save(user);
+    },
+
+    // Fetches all local users
     async getSavedUsers() {
         return usersRepository.findAll();
     },

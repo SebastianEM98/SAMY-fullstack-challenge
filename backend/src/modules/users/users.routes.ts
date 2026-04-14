@@ -8,6 +8,7 @@ const router = Router();
 router.use(authenticate);
 
 router.get('/reqres', usersController.getReqResUsers);
+router.get('/reqres/:id', usersController.getReqResUserById);
 router.post('/import/:id', usersController.importUser);
 router.get('/saved', usersController.getSavedUsers);
 
