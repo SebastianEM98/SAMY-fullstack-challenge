@@ -1,0 +1,48 @@
+service: samy-challenge-api
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  environment:
+    NODE_ENV: production
+    DATABASE_URL: ${env:DATABASE_URL}
+    FRONTEND_URL: ${env:FRONTEND_URL}
+    REQRES_API_KEY: ${env:REQRES_API_KEY}
+
+functions:
+  api:
+    handler: dist/lambda.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+      - httpApi:
+          path: /
+          method: ANY
+
+package:
+  individually: false
+  patterns:
+    - '!**/*'
+    - 'dist/**'
+    - 'node_modules/**'
+    - '!node_modules/.cache/**'
+    - '!node_modules/.bin/**'
+    - '!node_modules/@prisma/engines/**'
+    - '!node_modules/prisma/**'
+    - '!node_modules/typescript/**'
+    - '!node_modules/ts-node/**'
+    - '!node_modules/ts-node-dev/**'
+    - '!node_modules/nodemon/**'
+    - '!node_modules/@types/**'
+    - '!node_modules/jest/**'
+    - '!node_modules/ts-jest/**'
+    - '!node_modules/supertest/**'
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 4000

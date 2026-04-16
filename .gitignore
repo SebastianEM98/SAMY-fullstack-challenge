@@ -2,8 +2,10 @@ backend/node_modules/
 backend/dist/
 backend/src/coverage/
 backend/.env
+backend/.env.production
 backend/src/generated/prisma
 backend/src/generated/prisma
+backend/.serverless/
 
 
 # dependencies
