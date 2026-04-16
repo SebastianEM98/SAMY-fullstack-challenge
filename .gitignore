@@ -6,6 +6,7 @@ backend/.env.production
 backend/src/generated/prisma
 backend/src/generated/prisma
 backend/.serverless/
+backend/deploy.ps1
 
 
 # dependencies
