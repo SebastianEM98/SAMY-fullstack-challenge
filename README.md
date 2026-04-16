@@ -7,6 +7,8 @@
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=flat-square&logo=prisma&logoColor=white)
 ![AWS Lambda](https://img.shields.io/badge/AWS-Lambda-FF9900?style=flat-square&logo=amazon-aws&logoColor=white)
 ![Deployed on Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
+![Backend Coverage](https://img.shields.io/badge/Backend%20Coverage-89%25-brightgreen?style=flat-square)
+![Frontend Coverage](https://img.shields.io/badge/Frontend%20Coverage-85%25-brightgreen?style=flat-square)
 
 A full-stack User & Posts Management Portal built with Next.js, Node.js/Express, PostgreSQL on Neon, and deployed on AWS Lambda + Vercel.
 
@@ -33,46 +35,7 @@ A full-stack User & Posts Management Portal built with Next.js, Node.js/Express,
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                        Frontend                          │
-│                  Next.js 15 + Tailwind v4               │
-│                                                          │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐              │
-│  │  /login  │  │  /users  │  │  /posts  │              │
-│  └──────────┘  └──────────┘  └──────────┘              │
-│                    proxy.ts (middleware)                  │
-│              rewrites /backend/* → API                   │
-└──────────────────────┬──────────────────────────────────┘
-                       │ HTTP (same origin via rewrite)
-┌──────────────────────▼──────────────────────────────────┐
-│                      Backend                             │
-│              Express.js + TypeScript                     │
-│                                                          │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │              Controller Layer                       │ │
-│  │   auth.controller  users.controller  posts.ctrl    │ │
-│  └──────────────────────┬─────────────────────────────┘ │
-│  ┌──────────────────────▼─────────────────────────────┐ │
-│  │               Service Layer                         │ │
-│  │   auth.service     users.service    posts.service  │ │
-│  └──────────────────────┬─────────────────────────────┘ │
-│  ┌──────────────────────▼─────────────────────────────┐ │
-│  │             Repository Layer                        │ │
-│  │             users.repository  posts.repository     │ │
-│  └──────────────────────┬─────────────────────────────┘ │
-└──────────────────────────┼──────────────────────────────┘
-                           │ Prisma ORM
-┌──────────────────────────▼──────────────────────────────┐
-│              PostgreSQL (Neon Serverless)                 │
-│                  users table + posts table               │
-└─────────────────────────────────────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────────┐
-│                  ReqRes External API                     │
-│              https://reqres.in/api                       │
-└─────────────────────────────────────────────────────────┘
-```
+![Architecture](./docs/architecture.svg)
 
 ---
 
@@ -242,12 +205,18 @@ cd backend
 npm install
 ```
 
-Create the `.env` file:
+Create the `.env` file from the example:
 
 ```bash
+# Linux/Mac
 cp .env.example .env
-# Fill in DATABASE_URL and REQRES_API_KEY
+
+# Windows
+copy .env.example .env
 ```
+
+Then fill in your values in `.env`.
+
 
 Run database migrations:
 
@@ -276,11 +245,18 @@ cd ../frontend
 npm install
 ```
 
-Create the `.env.local` file:
+Create the `.env.local` file from the example:
 
 ```bash
+# Linux/Mac
 cp .env.local.example .env.local
+
+# Windows
+copy .env.local.example .env.local
 ```
+
+Then fill in your values in `.env.local`.
+
 
 Start the development server:
 
