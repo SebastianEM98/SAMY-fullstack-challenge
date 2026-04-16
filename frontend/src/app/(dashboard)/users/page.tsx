@@ -1,0 +1,188 @@
+'use client';
+
+import { useEffect, useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { Search, ChevronLeft, ChevronRight, Users } from 'lucide-react';
+import { Button, Input, Spinner, EmptyState } from '@/components/ui';
+import { UserCard } from '@/components/users/UserCard';
+import { usersApi } from '@/lib/api/users';
+import { ReqResUser } from '@/types/user';
+
+export default function UsersPage() {
+    const router = useRouter();
+    const [allUsers, setAllUsers] = useState<ReqResUser[]>([]);
+    const [loadingSearch, setLoadingSearch] = useState(false);
+    const [users, setUsers] = useState<ReqResUser[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [search, setSearch] = useState('');
+    const [importingId, setImportingId] = useState<number | null>(null);
+    const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
+
+    useEffect(() => {
+        fetchUsers();
+    }, [page]);
+
+    useEffect(() => {
+        fetchSavedIds();
+    }, []);
+
+    // When the user types in the search bar, fetch all pages
+    useEffect(() => {
+        if (search.trim()) {
+            fetchAllUsers();
+        }
+    }, [search]);
+
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            const res = await usersApi.getReqResUsers(page);
+            setUsers(res.data);
+            setTotalPages(res.total_pages);
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to fetch users');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchSavedIds = async () => {
+        try {
+            const saved = await usersApi.getSavedUsers();
+            setSavedIds(new Set(saved.map((user) => user.id)));
+        } catch {
+            // silently fail
+        }
+    };
+
+    const fetchAllUsers = async () => {
+        if (allUsers.length > 0) return;
+        setLoadingSearch(true);
+        try {
+            // ReqRes has a maximum of 2 pages, fetch them in parallel
+            const [page1, page2] = await Promise.all([
+                usersApi.getReqResUsers(1),
+                usersApi.getReqResUsers(2),
+            ]);
+            setAllUsers([...page1.data, ...page2.data]);
+        } catch (error: any) {
+            toast.error('Failed to fetch all users for search');
+        } finally {
+            setLoadingSearch(false);
+        }
+    };
+
+    const handleImport = async (user: ReqResUser) => {
+        setImportingId(user.id);
+        try {
+            await usersApi.importUser(user.id);
+            setSavedIds((prev) => new Set([...prev, user.id]));
+            toast.success(`${user.first_name} saved locally`);
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to import user');
+        } finally {
+            setImportingId(null);
+        }
+    };
+
+    const filteredUsers = useMemo(() => {
+        const source = search.trim() ? allUsers : users;
+        if (!search.trim()) return source;
+        const searchValue = search.toLowerCase();
+        return source.filter(
+            (user) =>
+                user.first_name.toLowerCase().includes(searchValue) ||
+                user.last_name.toLowerCase().includes(searchValue) ||
+                user.email.toLowerCase().includes(searchValue)
+        );
+    }, [users, allUsers, search]);
+
+    return (
+        <div className="flex flex-col gap-6 max-w-5xl">
+
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-xl font-bold text-neutral-100">Users</h1>
+                    <p className="text-sm text-neutral-500 mt-0.5">
+                        Browse and import users from ReqRes
+                    </p>
+                </div>
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={<Users size={14} />}
+                    onClick={() => router.push('/users/saved')}
+                >
+                    Saved users
+                </Button>
+            </div>
+
+            {/* Search */}
+            <Input
+                type="text"
+                autoComplete='off'
+                placeholder="Search by name or email..."
+                icon={<Search size={15} />}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+            />
+
+            {/* Content */}
+            {loading || loadingSearch ? (
+                <Spinner label={loadingSearch ? 'Searching all users...' : 'Fetching users...'} />
+            ) : filteredUsers.length === 0 ? (
+                <EmptyState
+                    icon={<Users size={20} />}
+                    title="No users found"
+                    description={search ? 'Try a different search term' : 'No users available'}
+                />
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredUsers.map((user) => (
+                        <UserCard
+                            key={user.id}
+                            user={user}
+                            isSaved={savedIds.has(user.id)}
+                            importing={importingId === user.id}
+                            onImport={() => handleImport(user)}
+                            onClick={() => router.push(`/users/${user.id}`)}
+                        />
+                    ))}
+                </div>
+            )}
+
+            {/* Pagination */}
+            {!search && (
+                <div className="flex items-center justify-between pt-2">
+                    <p className="text-xs text-neutral-600">
+                        Page {page} of {totalPages}
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            icon={<ChevronLeft size={14} />}
+                            disabled={page === 1}
+                            onClick={() => setPage((page) => page - 1)}
+                        >
+                            Prev
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            icon={<ChevronRight size={14} />}
+                            disabled={page === totalPages}
+                            onClick={() => setPage((page) => page + 1)}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
