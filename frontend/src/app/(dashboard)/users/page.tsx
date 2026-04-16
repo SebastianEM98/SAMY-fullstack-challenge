@@ -11,6 +11,8 @@ import { ReqResUser } from '@/types/user';
 
 export default function UsersPage() {
     const router = useRouter();
+    const [allUsers, setAllUsers] = useState<ReqResUser[]>([]);
+    const [loadingSearch, setLoadingSearch] = useState(false);
     const [users, setUsers] = useState<ReqResUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -26,6 +28,13 @@ export default function UsersPage() {
     useEffect(() => {
         fetchSavedIds();
     }, []);
+
+    // When the user types in the search bar, fetch all pages
+    useEffect(() => {
+        if (search.trim()) {
+            fetchAllUsers();
+        }
+    }, [search]);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -49,6 +58,23 @@ export default function UsersPage() {
         }
     };
 
+    const fetchAllUsers = async () => {
+        if (allUsers.length > 0) return;
+        setLoadingSearch(true);
+        try {
+            // ReqRes has a maximum of 2 pages, fetch them in parallel
+            const [page1, page2] = await Promise.all([
+                usersApi.getReqResUsers(1),
+                usersApi.getReqResUsers(2),
+            ]);
+            setAllUsers([...page1.data, ...page2.data]);
+        } catch (error: any) {
+            toast.error('Failed to fetch all users for search');
+        } finally {
+            setLoadingSearch(false);
+        }
+    };
+
     const handleImport = async (user: ReqResUser) => {
         setImportingId(user.id);
         try {
@@ -63,15 +89,16 @@ export default function UsersPage() {
     };
 
     const filteredUsers = useMemo(() => {
-        if (!search.trim()) return users;
+        const source = search.trim() ? allUsers : users;
+        if (!search.trim()) return source;
         const searchValue = search.toLowerCase();
-        return users.filter(
+        return source.filter(
             (user) =>
                 user.first_name.toLowerCase().includes(searchValue) ||
                 user.last_name.toLowerCase().includes(searchValue) ||
                 user.email.toLowerCase().includes(searchValue)
         );
-    }, [users, search]);
+    }, [users, allUsers, search]);
 
     return (
         <div className="flex flex-col gap-6 max-w-5xl">
@@ -105,8 +132,8 @@ export default function UsersPage() {
             />
 
             {/* Content */}
-            {loading ? (
-                <Spinner label="Fetching users..." />
+            {loading || loadingSearch ? (
+                <Spinner label={loadingSearch ? 'Searching all users...' : 'Fetching users...'} />
             ) : filteredUsers.length === 0 ? (
                 <EmptyState
                     icon={<Users size={20} />}
