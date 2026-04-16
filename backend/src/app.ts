@@ -1,0 +1,39 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from "morgan";
+import cookieParser from 'cookie-parser';
+import { corsOptions } from './config/cors';
+import { errorHandler } from './middleware/errorHandler';
+import { notFound } from './middleware/notFound';
+import { authRouter } from './modules/auth/auth.routes';
+import { usersRouter } from './modules/users/users.routes';
+import { postsRouter } from './modules/posts/posts.routes';
+
+export const createApp = () => {
+    const app = express();
+
+    // Security and parsing
+    app.use(helmet());
+    app.use(cors(corsOptions));
+    app.use(express.json());
+    app.use(cookieParser());
+    
+
+    // Logging
+    app.use(morgan('dev'))
+
+
+    // Routes
+    app.use('/auth', authRouter);
+    app.use('/users', usersRouter);
+    app.use('/posts', postsRouter);
+
+
+    // Error handling
+    app.use(notFound);
+    app.use(errorHandler);
+
+
+    return app;
+};

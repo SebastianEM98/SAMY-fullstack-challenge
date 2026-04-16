@@ -1,0 +1,124 @@
+import { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
+import { postsService } from './posts.service';
+import { PostId } from './posts.types';
+
+const createPostSchema = z.object({
+    title: z.string().min(3, 'Title must be at least 3 characters'),
+    content: z.string().min(10, 'Content must be at least 10 characters'),
+    authorUserId: z.number().int().positive('Author user ID must be a positive integer'),
+});
+
+const updatePostSchema = z.object({
+    title: z.string().min(3, 'Title must be at least 3 characters').optional(),
+    content: z.string().min(10, 'Content must be at least 10 characters').optional(),
+}).refine(
+    (data) => Object.keys(data).length > 0,
+    { message: 'At least one field must be provided' }
+);
+
+const pageSchema = z.coerce.number().int().positive().default(1);
+const limitSchema = z.coerce.number().int().positive().max(100).default(10);
+const idSchema: z.ZodType<PostId> = z.cuid('Invalid post ID');
+
+export const postsController = {
+
+    // POST /posts
+    async create(req: Request, res: Response, next: NextFunction) {
+        try {
+            const parsed = createPostSchema.safeParse(req.body);
+
+            if (!parsed.success) {
+                res.status(400).json({
+                    error: 'Validation failed',
+                    details: parsed.error.issues.map((i) => ({
+                        field: i.path.join('.'),
+                        message: i.message,
+                    })),
+                });
+                return;
+            }
+
+            const post = await postsService.create(parsed.data);
+            res.status(201).json(post);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // GET /posts
+    async getAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = pageSchema.parse(req.query.page ?? 1);
+            const limit = limitSchema.parse(req.query.limit ?? 10);
+            const result = await postsService.getAll(page, limit);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // GET /posts/:id
+    async getById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const parsed = idSchema.safeParse(req.params.id);
+
+            if (!parsed.success) {
+                res.status(400).json({ error: 'Invalid post ID' });
+                return;
+            }
+
+            const post = await postsService.getById(parsed.data);
+            res.json(post);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // PUT /posts/:id
+    async update(req: Request, res: Response, next: NextFunction) {
+        try {
+            const idParsed = idSchema.safeParse(req.params.id);
+
+            if (!idParsed.success) {
+                res.status(400).json({ error: 'Invalid post ID' });
+                return;
+            }
+
+            const bodyParsed = updatePostSchema.safeParse(req.body);
+
+            if (!bodyParsed.success) {
+                res.status(400).json({
+                    error: 'Validation failed',
+                    details: bodyParsed.error.issues.map((i) => ({
+                        field: i.path.join('.'),
+                        message: i.message,
+                    })),
+                });
+                return;
+            }
+
+            const post = await postsService.update(idParsed.data, bodyParsed.data);
+            res.json(post);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // DELETE /posts/:id
+    async delete(req: Request, res: Response, next: NextFunction) {
+        try {
+            const parsed = idSchema.safeParse(req.params.id);
+
+            if (!parsed.success) {
+                res.status(400).json({ error: 'Invalid post ID' });
+                return;
+            }
+
+            await postsService.delete(parsed.data);
+            res.status(204).send();
+        } catch (error) {
+            next(error);
+        }
+    },
+};
