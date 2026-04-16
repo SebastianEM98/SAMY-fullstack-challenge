@@ -22,7 +22,7 @@ export function UserCard({ user, isSaved, importing, onImport, onClick }: UserCa
                         alt={`${user.first_name} ${user.last_name}`}
                         width={44}
                         height={44}
-                        className="rounded-xl object-cover"
+                        className="rounded-xl object-cover w-11 h-11"
                     />
                 </div>
                 <div className="flex-1 min-w-0">
