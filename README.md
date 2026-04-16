@@ -35,7 +35,7 @@ A full-stack User & Posts Management Portal built with Next.js, Node.js/Express,
 
 ## 🏗️ Architecture
 
-![Architecture](./docs/architecture.svg)
+![Architecture](./docs/fullstack_architecture_diagram.svg)
 
 ---
 
