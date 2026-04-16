@@ -24,6 +24,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [isMobile, setIsMobile] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
 
+    const isCollapsed = collapsed && !isMobile;
+
     useEffect(() => {
         const check = () => {
             const mobile = window.innerWidth < MOBILE_BREAKPOINT;
@@ -56,7 +58,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Logo + toggle */}
             <div className="h-16 flex items-center justify-between px-4 border-b border-neutral-800/60 shrink-0">
                 <AnimatePresence mode="wait">
-                    {!collapsed && (
+                    {!isCollapsed  && (
                         <motion.div
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -103,7 +105,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             href={href}
                             className={clsx(
                                 'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200',
-                                collapsed && !isMobile ? 'justify-center' : '',
+                                isCollapsed ? 'justify-center' : '',
                                 isActive
                                     ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                                     : 'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800/60'
@@ -112,7 +114,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         >
                             <Icon size={16} className="shrink-0" />
                             <AnimatePresence mode="wait">
-                                {!collapsed && (
+                                {!isCollapsed  && (
                                     <motion.span
                                         initial={{ opacity: 0, width: 0 }}
                                         animate={{ opacity: 1, width: 'auto' }}
@@ -135,13 +137,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     onClick={handleLogout}
                     className={clsx(
                         'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-neutral-500 hover:text-red-400 hover:bg-red-500/5 transition-all duration-200 cursor-pointer',
-                        collapsed && !isMobile ? 'justify-center' : ''
+                        isCollapsed ? 'justify-center' : ''
                     )}
                     title={collapsed ? 'Sign out' : undefined}
                 >
                     <LogOut size={16} className="shrink-0" />
                     <AnimatePresence mode="wait">
-                        {!collapsed && (
+                        {!isCollapsed && (
                             <motion.span
                                 initial={{ opacity: 0, width: 0 }}
                                 animate={{ opacity: 1, width: 'auto' }}

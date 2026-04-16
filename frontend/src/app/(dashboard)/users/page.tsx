@@ -43,7 +43,7 @@ export default function UsersPage() {
     const fetchSavedIds = async () => {
         try {
             const saved = await usersApi.getSavedUsers();
-            setSavedIds(new Set(saved.map((u) => u.id)));
+            setSavedIds(new Set(saved.map((user) => user.id)));
         } catch {
             // silently fail
         }
@@ -64,12 +64,12 @@ export default function UsersPage() {
 
     const filteredUsers = useMemo(() => {
         if (!search.trim()) return users;
-        const q = search.toLowerCase();
+        const searchValue = search.toLowerCase();
         return users.filter(
-            (u) =>
-                u.first_name.toLowerCase().includes(q) ||
-                u.last_name.toLowerCase().includes(q) ||
-                u.email.toLowerCase().includes(q)
+            (user) =>
+                user.first_name.toLowerCase().includes(searchValue) ||
+                user.last_name.toLowerCase().includes(searchValue) ||
+                user.email.toLowerCase().includes(searchValue)
         );
     }, [users, search]);
 
@@ -96,6 +96,8 @@ export default function UsersPage() {
 
             {/* Search */}
             <Input
+                type="text"
+                autoComplete='off'
                 placeholder="Search by name or email..."
                 icon={<Search size={15} />}
                 value={search}
@@ -138,7 +140,7 @@ export default function UsersPage() {
                             size="sm"
                             icon={<ChevronLeft size={14} />}
                             disabled={page === 1}
-                            onClick={() => setPage((p) => p - 1)}
+                            onClick={() => setPage((page) => page - 1)}
                         >
                             Prev
                         </Button>
@@ -147,7 +149,7 @@ export default function UsersPage() {
                             size="sm"
                             icon={<ChevronRight size={14} />}
                             disabled={page === totalPages}
-                            onClick={() => setPage((p) => p + 1)}
+                            onClick={() => setPage((page) => page + 1)}
                         >
                             Next
                         </Button>
