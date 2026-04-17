@@ -11,8 +11,6 @@ import { usersRouter } from './modules/users/users.routes';
 import { postsRouter } from './modules/posts/posts.routes';
 
 export const createApp = () => {
-    // Comment test automatic deploy workflow
-
     const app = express();
 
     // Security and parsing
