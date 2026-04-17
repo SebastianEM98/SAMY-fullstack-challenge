@@ -18,8 +18,8 @@ A full-stack User & Posts Management Portal built with Next.js, Node.js/Express,
 
 | Service | URL |
 |---------|-----|
-| Frontend | `https://samy-challenge-sebastianem.vercel.app/` |
-| Backend (AWS Lambda) | `https://z30dtqlybc.execute-api.us-east-1.amazonaws.com/health` |
+| Frontend | [https://samy-challenge-sebastianem.vercel.app/](https://samy-challenge-sebastianem.vercel.app/) |
+| Backend (AWS Lambda) | [https://z30dtqlybc.execute-api.us-east-1.amazonaws.com/health](https://z30dtqlybc.execute-api.us-east-1.amazonaws.com/health) |
 
 ---
 
